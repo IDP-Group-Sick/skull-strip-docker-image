@@ -1,0 +1,47 @@
+FROM tensorflow/tensorflow:2.12.0-gpu-jupyter
+
+RUN apt-get update && apt-get -y install wget vim sudo
+COPY shortcuts.sh /etc/profile.d/00-shortcuts.sh
+RUN echo '\n. /etc/profile.d/00-shortcuts.sh' >> /etc/bash.bashrc
+
+# Install python 3.11
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt install -y python3.11
+
+# Install miniconda
+RUN mkdir /tmp/miniconda3
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda3/miniconda.sh
+RUN bash /tmp/miniconda3/miniconda.sh -b -u -p /opt/miniconda3 
+RUN chmod -R 777 /opt/miniconda3
+RUN rm -rf /tmp/miniconda3
+
+# Init conda for all users
+COPY conda-init.sh /etc/profile.d/00-conda-init.sh 
+RUN echo '\n. /etc/profile.d/00-conda-init.sh' >> /etc/bash.bashrc
+
+# Installing hd-bet
+RUN git clone https://github.com/MIC-DKFZ/HD-BET /tmp/hd-bet && \
+    pip install torch==1.13.0 torchvision==0.14.0 torchaudio==0.13.0 && \
+    pip install -e /tmp/hd-bet/
+
+# Installing elastix
+RUN wget https://github.com/SuperElastix/elastix/releases/download/5.0.0/elastix-5.0.0-Linux.tar.bz2 -P /tmp/ && \
+    mkdir /opt/elastix-5.0.0-linux && \
+    tar -xf /tmp/elastix-5.0.0-Linux.tar.bz2 -C /opt/elastix-5.0.0-linux && \
+    rm /tmp/elastix-5.0.0-Linux.tar.bz2 && \
+    chmod +x /opt/elastix-5.0.0-linux/bin/*
+
+ENV ELASTIX_PATH=/opt/elastix-5.0.0-linux/bin/
+
+# Install Ants
+RUN wget https://github.com/ANTsX/ANTs/releases/download/v2.1.0/Linux_Ubuntu14.04.tar.bz2 -P /tmp/ && \
+    mkdir /opt/ants-2.1.0 && \
+    tar -xf /tmp/Linux_Ubuntu14.04.tar.bz2 -C /opt/ants-2.1.0 && \
+    rm /tmp/Linux_Ubuntu14.04.tar.bz2 
+
+ENV PATH="$PATH:/opt/ants-2.1.0/ANTs.2.1.0.Debian-Ubuntu_X64/"
+
+# initialize ldconfig for non root users
+RUN echo 'ALL ALL=(root) NOPASSWD: /usr/sbin/ldconfig' >> /etc/sudoers
+# prepend the ldconfig line with sudo to run as root
+RUN sed -i '/ldconfig/c\sudo ldconfig' /etc/bash.bashrc
