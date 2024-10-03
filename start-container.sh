@@ -15,7 +15,20 @@ docker run -ti -d \
         -v "/etc/passwd:/etc/passwd:ro" \
         -v "/etc/shadow:/etc/shadow:ro" \
         --workdir=/home/dari \
-        -p $port:$port  --gpus device=1 \
+        -p $port:$port  --gpus device=0 \
         nordar/skull-strip-pipeline:2.12.0 \
-        bash -c 'export PATH=$PATH:/.local/bin; jupyter notebook --no-browser --ip=0.0.0.0 --port='"$port"' --notebook-dir /home/dari --NotebookApp.token=ADD-YOUR-JUPYTER-TOKEN-HERE'
+        bash -c 'export PATH=$PATH:/.local/bin; jupyter notebook --no-browser --ip=0.0.0.0 --port='"$port"' --notebook-dir /home/dari --NotebookApp.token=eee'
 
+# not mapped
+docker run -ti \
+        --name skull-strip-gpu \
+        -p $port:$port \
+        nordar/skull-strip-pipeline:2.12.0 \
+        bash -c 'export PATH=$PATH:/.local/bin; jupyter notebook --allow-root --no-browser --ip=0.0.0.0 --port='"$port"' --NotebookApp.token=eee'
+
+# windows
+docker run -ti `
+        --name skull-strip-gpu `
+        -p 1234:1234 `
+        skull-strip-pipeline:2.12.0-01 `
+        bash -c 'export PATH=$PATH:/.local/bin; jupyter notebook --allow-root --no-browser --ip=0.0.0.0 --port=1234 --NotebookApp.token=eee'
