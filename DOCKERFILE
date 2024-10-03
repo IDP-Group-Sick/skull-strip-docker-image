@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:2.16.2-gpu-jupyter
+FROM tensorflow/tensorflow:2.17.0-gpu-jupyter
 
 RUN apt-get update && apt-get -y install wget vim sudo
 COPY shortcuts.sh /etc/profile.d/00-shortcuts.sh
@@ -29,5 +29,5 @@ RUN echo 'ALL ALL=(root) NOPASSWD: /usr/sbin/ldconfig' >> /etc/sudoers
 # prepend the ldconfig line with sudo to run as root
 RUN sed -i '/ldconfig/c\sudo ldconfig' /etc/bash.bashrc
 
-RUN pip install tensorflow-probability[tf] && \
-    pip install tensorflow[and-cuda]
+RUN pip install tensorflow-probability[tf] tensorflow[and-cuda] \
+    matplotlib SimpleITK nibabel scikit-image totalsegmentator dcm2niix

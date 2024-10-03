@@ -22,7 +22,7 @@ docker run -d \
         -e JUPYTER_PORT="$port" \
         -p "$port":"$port" \
         --gpus device=0 --workdir=/home/dari \
-        nordar/skull-strip-pipeline:2.17.0-01
+        nordar/skull-strip-pipeline:2.16.2-01
 
 
 # windows
