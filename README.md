@@ -29,3 +29,4 @@ To upgrade to a new base image take the following steps:
 * Run the build script `build.ps1` or its UNIX equivalent.
     * Make sure to change the target docker repository from `nordar` to your own repository.
     * [(maybe you need to log into docker before you can push)](https://docs.docker.com/reference/cli/docker/login/)
+* Change this readme and commit the changes to GitHub.
